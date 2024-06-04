@@ -165,7 +165,7 @@ pub use capi::scvalue::{VALUE_RESULT, VALUE_STRING_CVT_TYPE, VALUE_TYPE};
 use capi::scvalue::VALUE;
 use ::om::IAsset;
 
-
+use std::cell::UnsafeCell;
 // TODO: `get`, `get_item` methods should return `Option<Value>`
 
 /// `sciter::value` wrapper.
@@ -174,7 +174,7 @@ use ::om::IAsset;
 pub struct Value
 {
 	data: VALUE,
-	tmp: * mut Value,
+	tmp: * mut UnsafeCell<Value>,
 }
 
 /// `sciter::Value` can be transferred across thread boundaries.
@@ -572,7 +572,8 @@ impl Value {
 		return v;
 	}
 
-  #[allow(clippy::mut_from_ref)]
+        #[allow(clippy::mut_from_ref)]
+		#[allow(invalid_reference_casting)]
 	fn ensure_tmp_mut(&self) -> &mut Value {
 		let cp = self as *const Value;
 		let mp = cp as *mut Value;
@@ -582,10 +583,14 @@ impl Value {
 
 	fn ensure_tmp(&mut self) -> &mut Value {
 		if self.tmp.is_null() {
-			let tmp = Box::new(Value::new());
+			let tmp = Box::new(UnsafeCell::new(Value {
+				data: Default::default(),
+				tmp: std::ptr::null_mut(),
+			}));
 			self.tmp = Box::into_raw(tmp);
+
 		}
-		return unsafe { &mut *self.tmp };
+		unsafe { &mut *self.tmp }.get_mut()
 	}
 
 	/// Returns `true` is `self` is `undefined` or has zero elements.

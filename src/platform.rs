@@ -158,7 +158,7 @@ mod windows {
 
 }
 
-#[cfg(target_os="linux")]
+#[cfg(target_os="freebsd")]
 mod linux {
 
 	use ::{_API};
@@ -481,7 +481,7 @@ mod macos {
 #[cfg(windows)]
 pub type OsWindow = windows::OsWindow;
 
-#[cfg(target_os="linux")]
+#[cfg(target_os="freebsd")]
 pub type OsWindow = linux::OsWindow;
 
 #[cfg(target_os="macos")]

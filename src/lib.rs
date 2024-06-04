@@ -232,7 +232,7 @@ mod ext {
 
   pub static mut CUSTOM_DLL_PATH: Option<String> = None;
 
-  #[cfg(target_os = "linux")]
+  #[cfg(target_os = "freebsd")]
   const DLL_NAMES: &[&str] = &[ "libsciter-gtk.so" ];
 
 	// "libsciter.dylib" since Sciter 4.4.6.3.
@@ -370,7 +370,7 @@ mod ext {
 }
 
 
-#[cfg(all(target_os = "linux", not(feature = "dynamic")))]
+#[cfg(all(target_os = "freebsd", not(feature = "dynamic")))]
 mod ext {
 	// Note:
 	// Since 4.1.4 library name has been changed to "libsciter-gtk" (without 32/64 suffix).
